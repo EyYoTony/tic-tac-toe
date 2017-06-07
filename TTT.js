@@ -1,6 +1,6 @@
 //import
 const keypress = require('keypress')
-const {repeat, compose} = require('ramda')
+const {compose} = require('ramda')
 //global variables
 var grid = newGrid()
 var userInput = []
@@ -46,6 +46,9 @@ function getCol(arr, col){
     }
   return column
 }
+function isGridFull(inGrid){
+  return !(inGrid[0].includes(" ")||inGrid[1].includes(" ")||inGrid[2].includes(" "))
+}
 //print output/formatting functions
 function printTTT(inGrid, isX){
   console.log(`enter 'q' to leave at any time \n`)
@@ -57,7 +60,7 @@ function printTTT(inGrid, isX){
   console.log(`\nIt is ${isX ? "X" : "O"}'s turn, where do you want to go? (ex. "0 0")\n`)
 }
 function newGrid(){
-  return repeat(repeat(" ", 3),3)
+  return [[" "," "," "],[" "," "," "],[" "," "," "]]
 }
 function line(){
   return "-----"
@@ -85,9 +88,6 @@ function inputResponse(userInput){
     console.log("Input was invalid, make sure to give row then col less than 2 (ex. 0 0)")
 }
 //keypress and gameplay
-//for some reason cant claim exact space, only cols
-grid[0][0] = "X"
-//^^^^^^^^^^^^^
 console.log("\nlets play a nice game of tic-tac-toe!")
 printTTT(grid,isX)
 process.stdin.on('keypress', function (ch, key) {
@@ -99,10 +99,19 @@ process.stdin.on('keypress', function (ch, key) {
   // "/r -> /n" indicate that the user has finished input then do a cycle
   if(ch === "\n"){
     inputResponse(userInput)
-    //if(winCheck(grid) !== -1){
-      //console.log(`${winCheck(grid)} is the winner!`)
-    //}
+    if(winCheck(grid) !== -1){
+      console.log(`${winCheck(grid)} is the winner!\n\n`)
+      console.log("Let's play again!\n")
+      grid = newGrid()
+      printTTT(grid, isX)
+      //todo add play again logic
+    }
+    else if(isGridFull(grid)){
+      console.log("It's a tie!\n\n")
+      console.log("Let's play again!\n")
+      grid = newGrid()
+      printTTT(grid, isX)
+    }
     userInput = []
   }
-
 })
